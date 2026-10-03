@@ -158,12 +158,13 @@ public class Home implements Serializable, Cloneable {
         HomePieceOfFurniture.SortableProperty.WIDTH,
         HomePieceOfFurniture.SortableProperty.DEPTH,
         HomePieceOfFurniture.SortableProperty.HEIGHT,
+        HomePieceOfFurniture.SortableProperty.VOLUME,
         HomePieceOfFurniture.SortableProperty.VISIBLE});
     // Init transient lists and other fields
     init(true);
     addModelListeners();
   }
-
+//////////// TODO: Push to repo - I've already committed
   /**
    * Creates a home from an other one. All mutable data of the source <code>home</code>
    * is cloned to this home and listeners support is reset.
@@ -326,7 +327,7 @@ public class Home implements Serializable, Cloneable {
     // Create a default top camera that matches default point of view 
     this.topCamera = new Camera(50, 1050, 1010, 
         (float)Math.PI, (float)Math.PI / 4, (float)Math.PI * 63 / 180);
-    // Create a default observer camera (use a 63° field of view equivalent to a 35mm lens for a 24x36 film)
+    // Create a default observer camera (use a 63ï¿½ field of view equivalent to a 35mm lens for a 24x36 film)
     this.observerCamera = new ObserverCamera(50, 50, 170, 
         7 * (float)Math.PI / 4, (float)Math.PI / 16, (float)Math.PI * 63 / 180);
     this.storedCameras = Collections.emptyList();

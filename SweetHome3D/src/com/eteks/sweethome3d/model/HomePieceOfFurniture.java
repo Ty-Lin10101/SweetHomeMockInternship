@@ -51,14 +51,14 @@ public class HomePieceOfFurniture extends HomeObject implements PieceOfFurniture
    * to a piece of furniture will be notified under a property name equal to the string value of one these properties.
    */
   public enum Property {NAME, NAME_VISIBLE, NAME_X_OFFSET, NAME_Y_OFFSET, NAME_STYLE, NAME_ANGLE,
-      DESCRIPTION, PRICE, WIDTH, DEPTH, HEIGHT, COLOR, TEXTURE, MODEL_MATERIALS, SHININESS, VISIBLE, X, Y, ELEVATION, ANGLE, MODEL_MIRRORED, MOVABLE, LEVEL};
+      DESCRIPTION, PRICE, WIDTH, DEPTH, HEIGHT, COLOR, TEXTURE, MODEL_MATERIALS, SHININESS, VISIBLE, X, Y, ELEVATION, ANGLE, MODEL_MIRRORED, MOVABLE, LEVEL, VOLUME};
   
   /** 
    * The properties on which home furniture may be sorted.  
    */
   public enum SortableProperty {CATALOG_ID, NAME, WIDTH, DEPTH, HEIGHT, MOVABLE, 
                                 DOOR_OR_WINDOW, COLOR, TEXTURE, VISIBLE, X, Y, ELEVATION, ANGLE,
-                                PRICE, VALUE_ADDED_TAX, VALUE_ADDED_TAX_PERCENTAGE, PRICE_VALUE_ADDED_TAX_INCLUDED, LEVEL};
+                                PRICE, VALUE_ADDED_TAX, VALUE_ADDED_TAX_PERCENTAGE, PRICE_VALUE_ADDED_TAX_INCLUDED, LEVEL, VOLUME};
   private static final Map<SortableProperty, Comparator<HomePieceOfFurniture>> SORTABLE_PROPERTY_COMPARATORS;
   private static final float [][] IDENTITY = new float [][] {{1, 0, 0}, {0, 1, 0}, {0, 0, 1}};
   
@@ -193,6 +193,11 @@ public class HomePieceOfFurniture extends HomeObject implements PieceOfFurniture
           return HomePieceOfFurniture.compare(piece1.getPriceValueAddedTaxIncluded(), piece2.getPriceValueAddedTaxIncluded());
         }
       });
+    SORTABLE_PROPERTY_COMPARATORS.put(SortableProperty.VOLUME, new Comparator<HomePieceOfFurniture>() {
+      public int compare(HomePieceOfFurniture piece1, HomePieceOfFurniture piece2) {
+        return HomePieceOfFurniture.compare(piece1.volume, piece2.volume);
+      }
+    });
   }
   
   private static int compare(float value1, float value2) {
@@ -268,6 +273,7 @@ public class HomePieceOfFurniture extends HomeObject implements PieceOfFurniture
   private float                  angle;
   private boolean                modelMirrored;
   private Level                  level;
+  private float                  volume;
   
   private transient PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
   private transient Shape shapeCache;
@@ -302,7 +308,7 @@ public class HomePieceOfFurniture extends HomeObject implements PieceOfFurniture
     this.valueAddedTaxPercentage = piece.getValueAddedTaxPercentage();
     this.currency = piece.getCurrency();
     if (piece instanceof HomePieceOfFurniture) {
-      HomePieceOfFurniture homePiece = 
+      HomePieceOfFurniture homePiece =
           (HomePieceOfFurniture)piece;
       this.catalogId = homePiece.getCatalogId();
       this.nameVisible = homePiece.isNameVisible();
@@ -321,11 +327,12 @@ public class HomePieceOfFurniture extends HomeObject implements PieceOfFurniture
     } else {
       if (piece instanceof CatalogPieceOfFurniture) {
         this.catalogId = ((CatalogPieceOfFurniture)piece).getId();
-      }      
+      }
       this.visible = true;
       this.x = this.width / 2;
       this.y = this.depth / 2;
     }
+    this.volume = this.width * this.depth * this.height;
   }
 
   /**
@@ -357,6 +364,20 @@ public class HomePieceOfFurniture extends HomeObject implements PieceOfFurniture
    */
   public void removePropertyChangeListener(PropertyChangeListener listener) {
     this.propertyChangeSupport.removePropertyChangeListener(listener);
+  }
+
+  /**
+   * Returns the volume of this piece of furniture.
+   */
+  public float getVolume() {
+    return this.volume;
+  }
+
+  /**
+   * Sets the volume of this piece of furniture.
+   */
+  public void setVolume(){
+    this.volume = this.width * this.depth * this.height;
   }
 
   /**
@@ -533,6 +554,7 @@ public class HomePieceOfFurniture extends HomeObject implements PieceOfFurniture
         this.depth = depth;
         this.shapeCache = null;
         this.propertyChangeSupport.firePropertyChange(Property.DEPTH.name(), oldDepth, depth);
+        setVolume();
       }
     } else {
       throw new IllegalStateException("Piece isn't resizable");
@@ -557,6 +579,7 @@ public class HomePieceOfFurniture extends HomeObject implements PieceOfFurniture
         float oldHeight = this.height;
         this.height = height;
         this.propertyChangeSupport.firePropertyChange(Property.HEIGHT.name(), oldHeight, height);
+        setVolume();
       }
     } else {
       throw new IllegalStateException("Piece isn't resizable");
@@ -582,6 +605,7 @@ public class HomePieceOfFurniture extends HomeObject implements PieceOfFurniture
         this.width = width;
         this.shapeCache = null;
         this.propertyChangeSupport.firePropertyChange(Property.WIDTH.name(), oldWidth, width);
+        setVolume();
       }
     } else {
       throw new IllegalStateException("Piece isn't resizable");

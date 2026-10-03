@@ -1157,7 +1157,9 @@ public class FurnitureTable extends JTable implements View, Printable {
         case VALUE_ADDED_TAX :
           return preferences.getLocalizedString(FurnitureTable.class, "valueAddedTaxColumn");          
         case PRICE_VALUE_ADDED_TAX_INCLUDED :
-          return preferences.getLocalizedString(FurnitureTable.class, "priceValueAddedTaxIncludedColumn");          
+          return preferences.getLocalizedString(FurnitureTable.class, "priceValueAddedTaxIncludedColumn");
+        case VOLUME:
+          return preferences.getLocalizedString(FurnitureTable.class, "volumeColumn");
         default :
           throw new IllegalArgumentException("Unknown column name " + property);
       }
@@ -1193,7 +1195,9 @@ public class FurnitureTable extends JTable implements View, Printable {
         case VALUE_ADDED_TAX_PERCENTAGE :
         case VALUE_ADDED_TAX :
         case PRICE_VALUE_ADDED_TAX_INCLUDED :
-          return 70;          
+          return 70;
+        case VOLUME :
+          return 60;
         default :
           throw new IllegalArgumentException("Unknown column name " + property);
       }
@@ -1242,10 +1246,31 @@ public class FurnitureTable extends JTable implements View, Printable {
         case VALUE_ADDED_TAX :
           return getPriceRenderer(HomePieceOfFurniture.SortableProperty.VALUE_ADDED_TAX, preferences);          
         case PRICE_VALUE_ADDED_TAX_INCLUDED :
-          return getPriceRenderer(HomePieceOfFurniture.SortableProperty.PRICE_VALUE_ADDED_TAX_INCLUDED, preferences);          
+          return getPriceRenderer(HomePieceOfFurniture.SortableProperty.PRICE_VALUE_ADDED_TAX_INCLUDED, preferences);
+        case VOLUME:
+          return getVolumeRenderer(preferences);
         default :
           throw new IllegalArgumentException("Unknown column name " + property);
       }
+    }
+
+    /**
+     * Returns a renderer that displays the volume of furniture.
+     */
+    private TableCellRenderer getVolumeRenderer(UserPreferences preferences) {
+      return new DefaultTableCellRenderer() {
+        @Override
+        public Component getTableCellRendererComponent(JTable table,
+                                                       Object value, boolean isSelected, boolean hasFocus,
+                                                       int row, int column) {
+          setHorizontalAlignment(JLabel.RIGHT);
+          return super.getTableCellRendererComponent(table,
+                  value != null ? preferences.getLengthUnit().getFormat().format(
+                          ((HomePieceOfFurniture)value).getVolume())
+                  : null,
+                  isSelected, hasFocus, row, column);
+        }
+      };
     }
 
     /**
