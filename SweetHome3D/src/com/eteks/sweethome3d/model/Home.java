@@ -164,7 +164,6 @@ public class Home implements Serializable, Cloneable {
     init(true);
     addModelListeners();
   }
-//////////// TODO: Push to repo - I've already committed
   /**
    * Creates a home from an other one. All mutable data of the source <code>home</code>
    * is cloned to this home and listeners support is reset.
